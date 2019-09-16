@@ -20,7 +20,7 @@ server.get('/', (req, res) => {
 server.post('/api/register', (req, res) => {
   let { username, password } = req.body;
 
-  const hash = bcrypt.hashSync(password, 8); // it's 2 ^ 8, not 8 rounds
+  const hash = bcrypt.hashSync(password, 8);
 
   Users.add({ username, password: hash })
     .then(saved => {
@@ -53,24 +53,11 @@ server.get('/api/users', restricted, (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.send(err));
+    .catch(err => {
+      console.log(err);
+      res.send(err);
+    });
 });
-
-// server.get('/hash', (req, res) => {
-//   const name = req.query.name;
-
-//   // hash the name
-//   const hash = bcrypt.hashSync(name, 8); // use bcryptjs to hash the name
-//   res.send(`the hash for ${name} is ${hash}`);
-// });
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`\n** Running on port ${port} **\n`));
-
-/*
-  write a middleware that will check for the username and password
-  and let the request continue to /api/users if credentials are good
-  return a 401 if the credentials are invalid
-
-  Use the middleware to restrict access to the GET /api/users endpoint
-*/
